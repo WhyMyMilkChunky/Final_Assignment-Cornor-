@@ -142,56 +142,21 @@ inline void DrawFaceWireframes(Image* image, Vector3* positions, size_t face, Co
 	}
 }
 
-struct UniformData
+inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world)
 {
-	Matrix mvp;
-	Matrix world;
-	Matrix normal;
+	// screen-space
+	Vector3* vertices = new Vector3[mesh.vertexCount];
 
-	Vector3 lightPosition;
-	Vector3 lightColor;
+	// world-space
+	Vector3* positions = new Vector3[mesh.vertexCount];
+	Vector3* normals = new Vector3[mesh.vertexCount];
 
-	// Supplying near & far for depth visualization
-	float near;
-	float far;
-};
-
-// Extract rotation from world matrix
-inline Matrix NormalMatrix(Matrix world)
-{
+	// Extract normal-matrix (remove translation and handle non-uniform scale)
 	Matrix normal = world;
 	normal.m12 = normal.m13 = normal.m14 = 0.0f;
 	normal = Transpose(Invert(normal));
-	return normal;
-}
 
-// Tri-linear interpolation across 3d points
-inline Vector3 Terp(Vector3 A, Vector3 B, Vector3 C, Vector3 t)
-{
-	return A * t.x + B * t.y + C * t.z;
-}
-
-// Tri-linear interpolation across 2d points
-inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
-{
-	return A * t.x + B * t.y + C * t.z;
-}
-
-// Simulating shader-switching
-// This is probably not practical for Assignment 2 because you have way more than just positions & normals to shade
-//using FragmentShader = Color(*)(Vector3 position, Vector3 normal);
-
-inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform/*, FragmentShader shader*/)
-{
-	// Vertex input begin
-	Vector3* vertices = new Vector3[mesh.vertexCount];
-	Vector3* ndcs = new Vector3[mesh.vertexCount];
-	Vector3* positions = new Vector3[mesh.vertexCount];
-	Vector3* normals = new Vector3[mesh.vertexCount];
-	Vector2* tcoords = new Vector2[mesh.vertexCount];
-	// Vertex input end
-
-	// Vertex shader begin
+	// Convert mesh vertices from view-space to screen-space
 	for (size_t i = 0; i < mesh.vertexCount; i++)
 	{
 		Vector4 clip;
@@ -200,24 +165,21 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform/*, FragmentSha
 		clip.z = mesh.positions[i].z;
 		clip.w = 1.0f;
 
-		clip = uniform.mvp * clip;
+		clip = mvp * clip;
 		clip /= clip.w;
 
-		Vector3 ndc{ clip.x, clip.y, clip.z };
-		Vector3 screen = ndc;
+		Vector3 screen;
 		screen.x = Remap(clip.x, -1.0f, 1.0f, 0.0f, image->width - 1.0f);
 		screen.y = Remap(clip.y, -1.0f, 1.0f, 0.0f, image->height - 1.0f);
+		screen.z = clip.z;
 
 		vertices[i] = screen;
-		ndcs[i] = ndc;
-		positions[i] = uniform.world * mesh.positions[i];
-		normals[i] = Normalize(uniform.normal * mesh.normals[i]);
-		tcoords[i] = mesh.tcoords[i];
+		positions[i] = world * mesh.positions[i];
+		normals[i] = Normalize(normal * mesh.normals[i]);
 	}
-	// Vertex shader end
 
 	// Triangle AABBs
-	Rect* rects = new Rect[mesh.faceCount];
+	Rect* rects = new Rect[mesh.faceCount];				
 	for (size_t face = 0; face < mesh.faceCount; face++)
 	{
 		// Ensure min & max get overwritten
@@ -238,26 +200,10 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform/*, FragmentSha
 			yMax = std::min(image->height - 1, std::max(yMax, y));
 		}
 
-		// Face culling
-		Vector3 v0 = ndcs[vertex + 0];
-		Vector3 v1 = ndcs[vertex + 1];
-		Vector3 v2 = ndcs[vertex + 2];
-		Vector3 n = Normalize(Cross(v1 - v0, v2 - v1));
-		bool front = Dot(n, V3_FORWARD) > 0.0f;
-		if (front)
-		{
-			rects[face].xMin = xMin;
-			rects[face].xMax = xMax;
-			rects[face].yMin = yMin;
-			rects[face].yMax = yMax;
-		}
-		else
-		{
-			rects[face].xMin = 0;
-			rects[face].xMax = -1;
-			rects[face].yMin = 0;
-			rects[face].yMax = -1;
-		}
+		rects[face].xMin = xMin;
+		rects[face].xMax = xMax;
+		rects[face].yMin = yMin;
+		rects[face].yMax = yMax;
 	}
 
 	for (size_t face = 0; face < mesh.faceCount; face++)
@@ -266,85 +212,44 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform/*, FragmentSha
 		{
 			for (int y = rects[face].yMin; y <= rects[face].yMax; y++)
 			{
-				// Rasterizer begin
 				size_t vertex = face * 3;
 				Vector3 v0 = vertices[vertex + 0];
 				Vector3 v1 = vertices[vertex + 1];
 				Vector3 v2 = vertices[vertex + 2];
 				
+				// Tri-linear interpolation, ensure 0.0 >= uvw <= 1.0
 				Vector3 bc = Barycenter({ (float)x, (float)y, 0.0f }, v0, v1, v2);
 				bool low = bc.x < 0.0f || bc.y < 0.0f || bc.z < 0.0f;
 				bool high = bc.x > 1.0f || bc.y > 1.0f || bc.z > 1.0f;
-				bool nan = _isnanf(bc.x) || _isnanf(bc.y) || _isnanf(bc.z);
-				// nan only seems to affect uvs but not positions or normals...
 
-				if (low || high || nan)
+				// Discard if pixel not in triangle
+				if (low || high)
 					continue;
 
+				// Depth is now within [near = 0.001, far = 10.0], comparison is LESS
 				float depth = v0.z * bc.x + v1.z * bc.y + v2.z * bc.z;
 				if (depth > GetDepth(*image, x, y))
 					continue;
 				SetDepth(image, x, y, depth);
-				// Rasterizer end
 
-				// Fragment shader begin
 				Vector3 p0 = positions[vertex + 0];
 				Vector3 p1 = positions[vertex + 1];
 				Vector3 p2 = positions[vertex + 2];
-				Vector3 p = Terp(p0, p1, p2, bc);
+				Vector3 p = p0 * bc.x + p1 * bc.y + p2 * bc.z;
 				
 				Vector3 n0 = normals[vertex + 0];
 				Vector3 n1 = normals[vertex + 1];
 				Vector3 n2 = normals[vertex + 2];
-				Vector3 n = Terp(n0, n1, n2, bc);
+				Vector3 n = n0 * bc.x + n1 * bc.y + n2 * bc.z;
 
-				Vector2 uv0 = tcoords[vertex + 0];
-				Vector2 uv1 = tcoords[vertex + 1];
-				Vector2 uv2 = tcoords[vertex + 2];
-				Vector2 uv = Terp(uv0, uv1, uv2, bc);
-
-				float tw = gImageDiffuse.width;
-				float th = gImageDiffuse.height;
-				Color textureColor = GetPixel(gImageDiffuse, uv.x * tw, uv.y * th);
-
-				// Light vector -- FROM fragment TO light
-				Vector3 l = Normalize(uniform.lightPosition - p);
-				float diffuseIntensity = std::max(Dot(n, l), 0.0f);
-
-				Vector3 pixelColor{ textureColor.r, textureColor.g, textureColor.b };
-				pixelColor /= 255.0f;
-				pixelColor *= uniform.lightColor * diffuseIntensity;
-
-				//Color color = Float3ToColor(&pixelColor.x);
-
-				// Shade based on texture coordinates
-				//Color color = Float2ToColor(&uv.x);
-
-				// Shade based on barycentric coordinates
-				//Color color = Float3ToColor(&bc.x);
-
-				// Shade based on depth (just kidding, its always 1 for some reason, message me if you're interesting in troubleshooting)
-				//depth = Decode(depth, uniform.near, uniform.far);
-				//depth = NormalizeDepth(depth, uniform.near, uniform.far);
-				Vector3 d = V3_ONE * depth;
-				Color color = Float3ToColor(&d.x);
-
-				// Shade based on texture color + normals
-				//Vector3 tc = { textureColor.r, textureColor.g, textureColor.b };
-				//tc /= 255.0f;
-				//tc *= n;
-				//Color color = Float3ToColor(&tc.x);
-
+				Color color = Float3ToColor(&n.x);
 				SetPixel(image, x, y, color);
-				// Fragment shader end
 			}
 		}
 	}
 
 	delete[] rects;
-	delete[] tcoords;
 	delete[] normals;
 	delete[] positions;
-	delete[] ndcs;
 	delete[] vertices;
 }
