@@ -10,6 +10,10 @@ public:
 	{
 		MAIN,
 		TEST,
+		SECOND,
+		THIRD,
+		FOURTH,
+		FIFTH,
 		COUNT
 	};
 

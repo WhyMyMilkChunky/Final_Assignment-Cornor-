@@ -1,6 +1,10 @@
 #include "Scene.h"
 #include "MainScene.h"
 #include "TestScene.h"
+#include "SecondScene.h"
+#include "ThirdScene.h"
+#include "FourthScene.h"
+#include "FifthScene.h"
 
 Scene* Scene::sScenes[Scene::COUNT]{};
 Scene* Scene::sScene = nullptr;
@@ -10,6 +14,10 @@ void Scene::Create(Scene::Type scene)
 {
 	sScenes[MAIN] = new MainScene;
 	sScenes[TEST] = new TestScene;
+	sScenes[SECOND] = new SecondScene;
+	sScenes[THIRD] = new ThirdScene;
+	sScenes[FOURTH] = new FourthScene;
+	sScenes[FIFTH] = new FifthScene;
 
 	for (size_t i = 0; i < COUNT; i++)
 		sScenes[i]->OnCreate();
