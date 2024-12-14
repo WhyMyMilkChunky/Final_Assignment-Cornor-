@@ -81,6 +81,10 @@
     <ClCompile Include="src\Shader.cpp">
       <Filter>Pipeline</Filter>
     </ClCompile>
+    <ClCompile Include="src\SecondScene.cpp" />
+    <ClCompile Include="src\ThirdScene.cpp" />
+    <ClCompile Include="src\FifthScene.cpp" />
+    <ClCompile Include="src\FourthScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="inc\imgui\imconfig.h">
@@ -161,5 +165,9 @@
     <ClInclude Include="src\Math.h">
       <Filter>Application</Filter>
     </ClInclude>
+    <ClInclude Include="src\SecondScene.h" />
+    <ClInclude Include="src\ThirdScene.h" />
+    <ClInclude Include="src\FifthScene.h" />
+    <ClInclude Include="src\FourthScene.h" />
   </ItemGroup>
 </Project>

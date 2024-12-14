@@ -92,6 +92,8 @@
     <ClCompile Include="inc\imgui\imgui_tables.cpp" />
     <ClCompile Include="inc\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\App.cpp" />
+    <ClCompile Include="src\FifthScene.cpp" />
+    <ClCompile Include="src\FourthScene.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Image.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -99,9 +101,11 @@
     <ClCompile Include="src\Materials.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\SecondScene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\TestScene.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\ThirdScene.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -117,6 +121,8 @@
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Color.h" />
     <ClInclude Include="src\Config.h" />
+    <ClInclude Include="src\FifthScene.h" />
+    <ClInclude Include="src\FourthScene.h" />
     <ClInclude Include="src\Image.h" />
     <ClInclude Include="src\ImageUtils.h" />
     <ClInclude Include="src\Lights.h" />
@@ -127,9 +133,11 @@
     <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Rasterization.h" />
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\SecondScene.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\TestScene.h" />
     <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\ThirdScene.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
