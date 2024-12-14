@@ -7,7 +7,7 @@
 #include "Window.h"
 
 constexpr int IMAGE_SIZE = 512;
-
+int Keyinput = KEY_1;
 void MainScene::OnLoad()
 {
 	LoadImage(&mImage, IMAGE_SIZE, IMAGE_SIZE);
@@ -41,6 +41,11 @@ void MainScene::OnUpdate(float dt)
 	uniform.lightPosition = { 0.0f, sinf(TotalTime()) * 3.0f, 10.0f};
 
 	DrawMesh(&mImage, gMeshHead, uniform);
+
+	if (IsKeyPressed(Keyinput)) {
+	Scene:Change(TEST);
+	}
+
 }
 
 void MainScene::OnDraw()
