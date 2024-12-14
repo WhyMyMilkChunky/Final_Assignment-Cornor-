@@ -10,10 +10,7 @@ struct Shader
 };
 
 extern Shader gShaderFSQ;
-extern Shader gShaderFractal;
 extern Shader gShaderColor;
-extern Shader gShaderNormals;
-extern Shader gShaderTcoords;
 
 void CreateShaders();
 void DestroyShaders();
