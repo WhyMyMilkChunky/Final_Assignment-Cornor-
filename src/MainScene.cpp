@@ -4,6 +4,7 @@
 #include "App.h"
 #include "Rasterization.h"
 #include "ImageUtils.h"
+#include "Window.h"
 
 constexpr int IMAGE_SIZE = 512;
 
@@ -60,6 +61,9 @@ void MainScene::OnUpdate(float dt)
     Matrix proj = Perspective(90.0f * DEG2RAD, 1.0f, 0.001f, 100.0f);
     Matrix mvp = model * view * proj;
     DrawMesh(&mImage, gMeshSphere, mvp, model);
+    if (IsKeyPressed(KEY_1)) {
+    Scene:Change(TEST);
+    }
 }
 
 void MainScene::OnDraw()

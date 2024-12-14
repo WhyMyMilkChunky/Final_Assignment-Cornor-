@@ -4,6 +4,7 @@
 #include "App.h"
 #include "Rasterization.h"
 #include "ImageUtils.h"
+#include "Window.h"
 
 constexpr int IMAGE_SIZE = 512;
 
@@ -21,6 +22,11 @@ void FourthScene::OnUnload()
 
 void FourthScene::OnUpdate(float dt)
 {
+
+
+	if (IsKeyPressed(KEY_5)) {
+	Scene:Change(FIFTH);
+	}
 }
 
 void FourthScene::OnDraw()
