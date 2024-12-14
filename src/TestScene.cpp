@@ -15,7 +15,7 @@ Matrix proj = Perspective(fov, SCREEN_ASPECT, 0.1f, 100.0f);
 
 // Extra practice -- Either use an element buffer, or copy tcoords to per-vertex from par_shapes
 int shaderIndex = 1;
-Shader* shaders[] = { &gShaderColor, &gShaderNormals };//, &gShaderTcoords };
+Shader* shaders[] = { &gShaderColor, &gShaderNormals, &gShaderTcoords};
 Mesh* mesh = nullptr;
 Vector3 color = V3_ONE;
 
@@ -68,7 +68,8 @@ void TestScene::OnDrawImGui()
 	static const char* shaderNames[] =
 	{
 		"Color",
-		"Normals"//, "Tcoords"
+		"Normals"
+		,"Tcoords"
 	};
 
 	ImGui::Combo("Shaders", &shaderIndex, shaderNames, IM_ARRAYSIZE(shaderNames));
