@@ -22,9 +22,9 @@ void TestScene::OnUnload()
 
 void TestScene::OnUpdate(float dt)
 {
+	ClearColor(&mImage, RED);
 
-
-	if (IsKeyPressed(KEY_2)) {
+	if (IsKeyPressed(KEY_3)) {
 	Scene:Change(SECOND);
 	}
 }

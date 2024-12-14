@@ -61,7 +61,7 @@ void MainScene::OnUpdate(float dt)
     Matrix proj = Perspective(90.0f * DEG2RAD, 1.0f, 0.001f, 100.0f);
     Matrix mvp = model * view * proj;
     DrawMesh(&mImage, gMeshSphere, mvp, model);
-    if (IsKeyPressed(KEY_1)) {
+    if (IsKeyPressed(KEY_2)) {
     Scene:Change(TEST);
     }
 }

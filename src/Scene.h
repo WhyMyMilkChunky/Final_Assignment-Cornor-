@@ -13,7 +13,6 @@ public:
 		SECOND,
 		THIRD,
 		FOURTH,
-		FIFTH,
 		COUNT
 	};
 

@@ -22,8 +22,8 @@ void SecondScene::OnUnload()
 
 void SecondScene::OnUpdate(float dt)
 {
-
-	if (IsKeyPressed(KEY_3)) {
+	ClearColor(&mImage, MAGENTA);
+	if (IsKeyPressed(KEY_4)) {
 	Scene:Change(THIRD);
 	}
 }

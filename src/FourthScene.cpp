@@ -22,10 +22,10 @@ void FourthScene::OnUnload()
 
 void FourthScene::OnUpdate(float dt)
 {
+	ClearColor(&mImage, GREEN);
 
-
-	if (IsKeyPressed(KEY_5)) {
-	Scene:Change(FIFTH);
+	if (IsKeyPressed(KEY_1)) {
+	Scene:Change(MAIN);
 	}
 }
 

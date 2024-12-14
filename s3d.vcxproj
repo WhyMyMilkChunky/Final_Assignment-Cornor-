@@ -92,7 +92,6 @@
     <ClCompile Include="inc\imgui\imgui_tables.cpp" />
     <ClCompile Include="inc\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\App.cpp" />
-    <ClCompile Include="src\FifthScene.cpp" />
     <ClCompile Include="src\FourthScene.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\Image.cpp" />
@@ -121,7 +120,6 @@
     <ClInclude Include="src\App.h" />
     <ClInclude Include="src\Color.h" />
     <ClInclude Include="src\Config.h" />
-    <ClInclude Include="src\FifthScene.h" />
     <ClInclude Include="src\FourthScene.h" />
     <ClInclude Include="src\Image.h" />
     <ClInclude Include="src\ImageUtils.h" />
