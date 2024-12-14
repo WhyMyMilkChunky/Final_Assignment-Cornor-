@@ -122,18 +122,18 @@ void CreateMeshCPU(Mesh* mesh, size_t vc,
 		memcpy(mesh->tcoords, tcoords, vc * sizeof(Vector2));
 	}
 
-	if (colors != nullptr)
-	{
-		mesh->colors = new Vector3[vc];
-		memcpy(mesh->colors, colors, vc * sizeof(Vector3));
-	}
+	//if (colors != nullptr)
+	//{
+	//	mesh->colors = new Vector3[vc];
+	//	memcpy(mesh->colors, colors, vc * sizeof(Vector3));
+	//}
 
 	// Double-check whether index count ntriangles or npoints
-	if (indices != nullptr)
-	{
-		mesh->indices = new uint16_t[vc];
-		memcpy(mesh->indices, indices, vc * sizeof(uint16_t));
-	}
+	//if (indices != nullptr)
+	//{
+	//	mesh->indices = new uint16_t[vc];
+	//	memcpy(mesh->indices, indices, vc * sizeof(uint16_t));
+	//}
 }
 
 void CreateMeshGPU(Mesh* mesh)
@@ -166,22 +166,22 @@ void CreateMeshGPU(Mesh* mesh)
 		glEnableVertexAttribArray(2);
 	}
 
-	if (mesh->colors != nullptr)
-	{
-		glGenBuffers(1, &mesh->cbo);
-		glBindBuffer(GL_ARRAY_BUFFER, mesh->cbo);
-		glBufferData(GL_ARRAY_BUFFER, vc * sizeof(Vector3), mesh->colors, GL_STATIC_DRAW);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), nullptr);
-		glEnableVertexAttribArray(3);
-	}
+	//if (mesh->colors != nullptr)
+	//{
+	//	glGenBuffers(1, &mesh->cbo);
+	//	glBindBuffer(GL_ARRAY_BUFFER, mesh->cbo);
+	//	glBufferData(GL_ARRAY_BUFFER, vc * sizeof(Vector3), mesh->colors, GL_STATIC_DRAW);
+	//	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vector3), nullptr);
+	//	glEnableVertexAttribArray(3);
+	//}
 
 	// Double-check if ebo is associated with vao. Unbind if not!
-	if (mesh->indices != nullptr)
-	{
-		glGenBuffers(1, &mesh->ibo);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, vc * sizeof(uint16_t), mesh->indices, GL_STATIC_DRAW);
-	}
+	//if (mesh->indices != nullptr)
+	//{
+	//	glGenBuffers(1, &mesh->ibo);
+	//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->ibo);
+	//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, vc * sizeof(uint16_t), mesh->indices, GL_STATIC_DRAW);
+	//}
 
 	glBindVertexArray(GL_NONE);
 }

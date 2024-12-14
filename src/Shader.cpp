@@ -11,7 +11,10 @@ std::vector<GLuint> fShaders;
 std::vector<GLuint> fPrograms;
 
 Shader gShaderFSQ;
+Shader gShaderFractal;
 Shader gShaderColor;
+Shader gShaderNormals;
+Shader gShaderTcoords;
 
 GLuint CreateShader(GLint type, const char* path);
 void CreateProgram(Shader* shader, GLuint vs, GLuint fs);
@@ -23,10 +26,16 @@ void CreateShaders()
     GLuint fsTexture = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/texture.frag");
 
     GLuint vsMVP = CreateShader(GL_VERTEX_SHADER, "assets/shaders/default.vert");
-    GLuint fsColor= CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/color.frag");
+    GLuint fsColor = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/color.frag");
+    GLuint fsNormals = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/normals.frag");
+    GLuint fsTcoords = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/tcoords.frag");
+    GLuint fsFractal = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/fractal.frag");
     
     CreateProgram(&gShaderFSQ, vsFSQ, fsTexture);
+    CreateProgram(&gShaderFractal, vsFSQ, fsFractal);
     CreateProgram(&gShaderColor, vsMVP, fsColor);
+    CreateProgram(&gShaderNormals, vsMVP, fsNormals);
+    CreateProgram(&gShaderTcoords, vsMVP, fsTcoords);
 }
 
 void DestroyShaders()

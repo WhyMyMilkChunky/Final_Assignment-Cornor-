@@ -2,63 +2,74 @@
 #include "Shader.h"
 #include "Mesh.h"
 #include "App.h"
-#include "Rasterization.h"
-#include "ImageUtils.h"
+#include "Shader.h"
+#include "imgui/imgui.h"
 
 constexpr int IMAGE_SIZE = 512;
 
+float fov = 90.0f * DEG2RAD;
+Matrix mvp = MatrixIdentity();
+Matrix world = MatrixIdentity();
+Matrix view = LookAt(V3_FORWARD * 10.0f, V3_ZERO, V3_UP);
+Matrix proj = Perspective(fov, SCREEN_ASPECT, 0.1f, 100.0f);
+
+// Extra practice -- Either use an element buffer, or copy tcoords to per-vertex from par_shapes
+int shaderIndex = 1;
+Shader* shaders[] = { &gShaderColor, &gShaderNormals };//, &gShaderTcoords };
+Mesh* mesh = nullptr;
+Vector3 color = V3_ONE;
+
 void TestScene::OnLoad()
 {
-	LoadImage(&mImage, IMAGE_SIZE, IMAGE_SIZE);
-	LoadTexture(&mTexture, IMAGE_SIZE, IMAGE_SIZE);
+	glEnable(GL_DEPTH_TEST);
+	mesh = &gMeshSphere;
 }
 
 void TestScene::OnUnload()
 {
-	UnloadTexture(&mTexture);
-	UnloadImage(&mImage);
-}
-
-Vector3* CopyPositions(Vector3* vertices, size_t vertexCount)
-{
-	Vector3* positions = new Vector3[vertexCount];
-	memcpy(positions, vertices, sizeof(Vector3) * vertexCount);
-	return positions;
 }
 
 void TestScene::OnUpdate(float dt)
 {
-	ClearColor(&mImage, BLACK);
-	ClearDepth(&mImage, 1.0f);
-
 	float tt = TotalTime();
-	ClearColor(&mImage, BLACK);
-	const size_t vc = gMeshSphere.vertexCount;
-	const size_t fc = gMeshSphere.faceCount;
-
-	Vector3* positions = CopyPositions(gMeshSphere.positions, vc);
-
-	Matrix rotation = RotateY(TotalTime() * 100.0f * DEG2RAD);
-	Matrix scale = Scale(0.2, 0.2, 0.2);
-	//Matrix translate = Translate(-0.6, sinf(tt) * 0.1 - 0.5 , 0.0);
-	Matrix translate = Translate(-0.6, sinf(tt) * 0.4 - 0.5, 0.0);
-
-
-	for (size_t i = 0; i < fc; i++)
-		DrawFaceWireframes(&mImage, positions, i, RandRGB());
-	delete[] positions;
-
+	world = RotateY(100.0f * DEG2RAD * tt);
+	proj = Perspective(fov, SCREEN_ASPECT, 0.1f, 100.0f);
+	mvp = world * view * proj;
 }
 
 void TestScene::OnDraw()
 {
-	UpdateTexture(mTexture, mImage);
-
-	BindTexture(mTexture);
-	BindShader(&gShaderFSQ);
-	SendInt("u_tex", 0);
+	BindShader(&gShaderFractal);
+	SendFloat("u_time", TotalTime());
+	SendVec2("u_resolution", { SCREEN_WIDTH, SCREEN_HEIGHT });
 	BindFsq();
 	DrawFsq();
 	UnbindShader();
-	UnbindTexture(mTexture);
+
+	BindShader(shaders[shaderIndex]);
+	SendVec3("u_color", color);
+	SendMat4("u_world", &world);
+	SendMat4("u_mvp", &mvp);
+	DrawMesh(*mesh);
+	UnbindShader();
+}
+
+void TestScene::OnDrawImGui()
+{
+	static bool demo = false;
+	if (demo)
+	{
+		ImGui::ShowDemoWindow();
+		return;
+	}
+	ImGui::SliderAngle("FoV", &fov, 10.0f, 150.0f);
+	ImGui::ColorPicker3("Color", &color.x);
+
+	static const char* shaderNames[] =
+	{
+		"Color",
+		"Normals"//, "Tcoords"
+	};
+
+	ImGui::Combo("Shaders", &shaderIndex, shaderNames, IM_ARRAYSIZE(shaderNames));
 }

@@ -149,6 +149,11 @@ struct UniformData
 	Matrix normal;
 
 	Vector3 lightPosition;
+	Vector3 lightColor;
+
+	// Supplying near & far for depth visualization
+	float near;
+	float far;
 };
 
 // Extract rotation from world matrix
@@ -172,7 +177,11 @@ inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
 	return A * t.x + B * t.y + C * t.z;
 }
 
-inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
+// Simulating shader-switching
+// This is probably not practical for Assignment 2 because you have way more than just positions & normals to shade
+//using FragmentShader = Color(*)(Vector3 position, Vector3 normal);
+
+inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform/*, FragmentShader shader*/)
 {
 	// Vertex input begin
 	Vector3* vertices = new Vector3[mesh.vertexCount];
@@ -300,14 +309,32 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 
 				// Light vector -- FROM fragment TO light
 				Vector3 l = Normalize(uniform.lightPosition - p);
-				float diffuseIntensity = Dot(n, l);
-				Vector3 diffuseColor = { 1.0f, 0.0f, 0.0f };
+				float diffuseIntensity = std::max(Dot(n, l), 0.0f);
 
 				Vector3 pixelColor{ textureColor.r, textureColor.g, textureColor.b };
 				pixelColor /= 255.0f;
-				pixelColor *= diffuseColor * diffuseIntensity;
+				pixelColor *= uniform.lightColor * diffuseIntensity;
 
-				Color color = Float3ToColor(&pixelColor.x);
+				//Color color = Float3ToColor(&pixelColor.x);
+
+				// Shade based on texture coordinates
+				//Color color = Float2ToColor(&uv.x);
+
+				// Shade based on barycentric coordinates
+				//Color color = Float3ToColor(&bc.x);
+
+				// Shade based on depth (just kidding, its always 1 for some reason, message me if you're interesting in troubleshooting)
+				//depth = Decode(depth, uniform.near, uniform.far);
+				//depth = NormalizeDepth(depth, uniform.near, uniform.far);
+				Vector3 d = V3_ONE * depth;
+				Color color = Float3ToColor(&d.x);
+
+				// Shade based on texture color + normals
+				//Vector3 tc = { textureColor.r, textureColor.g, textureColor.b };
+				//tc /= 255.0f;
+				//tc *= n;
+				//Color color = Float3ToColor(&tc.x);
+
 				SetPixel(image, x, y, color);
 				// Fragment shader end
 			}
