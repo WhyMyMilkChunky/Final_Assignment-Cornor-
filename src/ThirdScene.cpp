@@ -63,7 +63,14 @@ void ThirdScene::OnDraw()
 	Matrix proj = Perspective(90.0f * DEG2RAD, 1.0f, 0.1f, 100.0f);
 	Matrix mvp = model * view * proj;
 
-	DrawMesh(&mImage, gMeshHead, mvp, model);
+	UniformData uniform;
+	uniform.mvp = model * view * proj;
+	uniform.lightPosition = lightPosition;
+	uniform.lightColor = Vector3({0.5,0.5,0.5 });
+	uniform.world = model;
+	uniform.normal = NormalMatrix(model);
+
+	DrawMesh(&mImage, gMeshHead,uniform);
 
 
 	BindTexture(mTexture);

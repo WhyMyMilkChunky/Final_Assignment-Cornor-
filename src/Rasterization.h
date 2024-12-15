@@ -242,7 +242,7 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world)
 				Vector3 n2 = normals[vertex + 2];
 				Vector3 n = n0 * bc.x + n1 * bc.y + n2 * bc.z;
 
-				Color color = Float3ToColor(&n.x);
+				Color color = Float3ToColor(&bc.x);
 				SetPixel(image, x, y, color);
 			}
 		}
@@ -267,6 +267,14 @@ struct UniformData
 	float near;
 	float far;
 };
+
+inline Matrix NormalMatrix(Matrix world)
+{
+	Matrix normal = world;
+	normal.m12 = normal.m13 = normal.m14 = 0.0f;
+	normal = Transpose(Invert(normal));
+	return normal;
+}
 // Tri-linear interpolation across 3d points
 inline Vector3 Terp(Vector3 A, Vector3 B, Vector3 C, Vector3 t)
 {
@@ -406,10 +414,15 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 				float diffuseIntensity = std::max(Dot(n, l), 0.0f);
 
 				Vector3 pixelColor{ textureColor.r, textureColor.g, textureColor.b };
+				Vector3 d = V3_ONE * depth;
 				pixelColor /= 255.0f;
 				pixelColor *= uniform.lightColor * diffuseIntensity;
-				Vector3 d = V3_ONE * depth;
-				Color color = Float3ToColor(&d.x);
+
+
+				Color color = Float3ToColor(&pixelColor.x);
+
+
+
 				SetPixel(image, x, y, color);
 			}
 		}
