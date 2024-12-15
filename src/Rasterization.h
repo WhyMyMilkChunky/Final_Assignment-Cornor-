@@ -286,6 +286,33 @@ inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
 {
 	return A * t.x + B * t.y + C * t.z;
 }
+inline Vector3 GetPointLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
+
+	//phong I REALLY THINK THIS IS PHONG AND WORKS PERFECTLY RIGHT
+// Light vector -- FROM fragment TO light
+	Vector3 L = Normalize(uniform.light.position - p);
+	Vector3 V = Normalize(uniform.cameraPos - uniform.light.position);
+	Vector3 R = Reflect(L * -1, n);
+	Vector3 halfway = Normalize(V + L);
+
+	//dotnl
+	float dotNL = std::max(Dot(n, L), 0.0f);
+	float dotVR = std::max(Dot(V, R), 0.0f);
+	float dotNH = std::max(Dot(halfway, n), 0.0f);
+
+	float distance = Length(uniform.light.position - p);
+	float attenuation = 1.0 / (distance * distance);
+
+	Vector3 lightApply{ textureColor.r, textureColor.g, textureColor.b };
+	Vector3 d = V3_ONE * depth;
+	lightApply /= 255.0f;
+	lightApply *= d;
+	lightApply += uniform.light.ambient * dotNL;
+	lightApply += uniform.light.ambient * powf(dotNH, 1.0f);
+	lightApply *= uniform.light.diffuse * attenuation;
+	lightApply *= uniform.light.radius;
+	return lightApply;
+}
 
 inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 {
@@ -409,32 +436,9 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 				float th = gImageDiffuse.height;
 				Color textureColor = GetPixel(gImageDiffuse, uv.x * tw, uv.y * th);
 
-				// Light vector -- FROM fragment TO light
-				Vector3 L = Normalize(uniform.light.position - p);
-				Vector3 V = Normalize(uniform.cameraPos - uniform.light.position);
-				Vector3 R = Reflect(L*-1, n);
-				Vector3 halfway = Normalize(V + L);
-
-				//dotnl
-				float dotNL = std::max(Dot(n, L), 0.0f);
-				float dotVR = std::max(Dot(V, R), 0.0f);
-				float dotNH = std::max(Dot(halfway, n), 0.0f);
-
-				float distance = Length(uniform.light.position - p);
-				float attenuation = 1.0 / (distance * distance);
-
-				Vector3 pixelColor{ textureColor.r, textureColor.g, textureColor.b };
-				Vector3 d = V3_ONE * depth;
-				pixelColor /= 255.0f;
-				pixelColor *= d;
-				pixelColor += uniform.light.ambient * dotNL;
-				pixelColor += uniform.light.ambient * powf(dotNH, 1.0f);
-				pixelColor *= uniform.light.diffuse * attenuation;
-				pixelColor *= uniform.light.radius;
+				Vector3 pixelColor = GetPointLight(uniform, n, textureColor, depth, p);
 
 				Color color = Float3ToColor(&pixelColor.x);
-
-
 
 				SetPixel(image, x, y, color);
 			}
@@ -448,3 +452,5 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 	delete[] ndcs;
 	delete[] vertices;
 }
+
+

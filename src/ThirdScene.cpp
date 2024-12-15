@@ -1,6 +1,5 @@
 #include "ThirdScene.h"
 #include "Shader.h"
-#include "Mesh.h"
 #include "App.h"
 #include "Rasterization.h"
 #include "Materials.h"
