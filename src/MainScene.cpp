@@ -33,6 +33,8 @@ void MainScene::OnUnload()
     UnloadImage(&mImage);
 }
 
+
+
 void MainScene::OnUpdate(float dt)
 {
     ClearColor(&mImage, BLACK);
@@ -71,7 +73,7 @@ void MainScene::OnDraw()
     UpdateTexture(mTexture, mImage);
 
     BindTexture(mTexture);
-    BindShader(&gShaderPhong);
+    BindShader(&gShaderFSQ);
     SendInt("u_tex", 0);
     BindFsq();
     DrawFsq();

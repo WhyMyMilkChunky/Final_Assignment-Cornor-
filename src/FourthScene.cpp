@@ -12,12 +12,18 @@ constexpr int IMAGE_SIZE = 512;
 Vector3 objectPos = {};
 Vector3 lightPos = V3_FORWARD;
 Vector3 objectScale = { 1,1,1 };
-Light footLight;
+Light footLight{
+	{0,2,10},
+	{200,100,200},
+	{200,100,200},
+	{200,100,200},
+	100
+};
 void FourthScene::OnLoad()
 {
 	LoadImage(&mImage, IMAGE_SIZE, IMAGE_SIZE);
 	LoadTexture(&mTexture, IMAGE_SIZE, IMAGE_SIZE);
-	footLight = CreateLight({ 0,2,3 }, { 255,255,255 }, 0.5, 0.5, 20);
+	footLight = CreateLight({ 0,2,3 }, { 250,150,150 }, 1, 01, 100);
 }
 
 
@@ -36,7 +42,7 @@ void FourthScene::OnUpdate(float dt)
 
 
 
-	Matrix translation = Translate({ 0.0f,0.0f,6.0f });
+	Matrix translation = Translate({ 0.0f,0.0f,10.0f });
 	Matrix rotation = RotateY(DEG2RAD);
 	Matrix scale = Scale({4,4,4});
 
