@@ -33,46 +33,51 @@ void ThirdScene::OnUnload()
 
 void ThirdScene::OnUpdate(float dt)
 {
-	ClearColor(&mImage, BLACK);
-	ClearDepth(&mImage, 1);
+    ClearColor(&mImage, BLACK);
+    ClearDepth(&mImage, 1);
 
-	float tt = TotalTime();
+    float tt = TotalTime();
 
+    float amplitude = 10;
+    float frequency = 0.5; //speed
+    lightPosition.y = amplitude * sinf(2.0f * PI * frequency * tt);
+    lightPosition.z = 5;
+    lightPosition.x = 0;
 
-	Matrix translation = Translate(objectPosition);
-	Matrix rotation = RotateY(DEG2RAD);
-	Matrix scale = Scale(objectScake);
+    Matrix translation = Translate(objectPosition);
+    Matrix rotation = RotateY(DEG2RAD);
+    Matrix scale = Scale(objectScake);
 
-	Matrix model = scale * rotation * translation;
-	Vector3 cameraPos = { 0.0f, 0.0f, 10.0f };
-	Matrix view = LookAt(cameraPos, V3_ZERO, V3_UP);
-	Matrix proj = Perspective(90.0f * DEG2RAD, 1.0f, 0.1f, 100.0f);
-	Matrix mvp = model * view * proj;
+    Matrix model = scale * rotation * translation;
+    Vector3 cameraPos = { 0, 0, 10};
+    Matrix view = LookAt(cameraPos, V3_ZERO, V3_UP);
+    Matrix proj = Perspective(90 * DEG2RAD, 1.0f, 0.1, 100);
+    Matrix mvp = model * view * proj;
 
-	Light light = CreateLight(lightPosition, lightColor, 0.25,1.0, 10);
+    Light light = CreateLight(lightPosition, lightColor, 0.25, 1.0, 10);
 
-	UniformData uniform;
-	uniform.mvp = model * view * proj;
-	uniform.cameraPos = cameraPos;
-	uniform.light = light;
-	uniform.light.position = lightPosition;
+    UniformData uniform;
+    uniform.mvp = model * view * proj;
+    uniform.cameraPos = cameraPos;
+    uniform.light = light;
+    uniform.light.position = lightPosition;
 
-	uniform.world = model;
-	uniform.normal = NormalMatrix(model);
+    uniform.world = model;
+    uniform.normal = NormalMatrix(model);
 
-	DrawMesh(&mImage, gMeshHead, uniform);
+    DrawMesh(&mImage, gMeshHead, uniform);
 
-
-	if (IsKeyPressed(KEY_5)) {
-	Scene:Change(FOURTH);
-	}
+    if (IsKeyPressed(KEY_5)) {
+        Scene::Change(FOURTH);
+    }
 }
+
 
 void ThirdScene::OnDrawImGui()
 {
-	ImGui::SliderFloat3("Object Position", &objectPosition.x, -8.0f, 8.0f);
-	ImGui::SliderFloat3("Light Position", &lightPosition.x, -15.0f, 15.0f);
-	ImGui::SliderFloat3("Object Scake", &objectScake.x, 1.0f, 1.0f);
+	ImGui::SliderFloat3("Object Position", &objectPosition.x, -8, 8);
+	ImGui::SliderFloat3("Light Position", &lightPosition.x, -15, 15);
+	ImGui::SliderFloat3("Object Scake", &objectScake.x, 1, 1);
 	ImGui::ColorPicker3("Light Colour", &lightColor.x);
 }
 
