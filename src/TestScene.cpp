@@ -27,6 +27,7 @@ void TestScene::OnUpdate(float dt)
 {
     ClearColor(&mImage, RED);
     ClearDepth(&mImage, 1.0f);
+
     const float rotationSpeed = 90.0f; 
     gCubeRotation += rotationSpeed * dt;
 
