@@ -51,7 +51,7 @@ void ThirdScene::OnUpdate(float dt)
     Matrix model = scale * rotation * translation;
     Vector3 cameraPos = { 0, 0, 10};
     Matrix view = LookAt(cameraPos, V3_ZERO, V3_UP);
-    Matrix proj = Perspective(90 * DEG2RAD, 1.0f, 0.1, 100);
+    Matrix proj = Perspective(45 * DEG2RAD, 1.0f, 0.1, 100);
     Matrix mvp = model * view * proj;
 
     Light light = CreateLight(lightPosition, lightColor, 0.25, 1.0, 10);
