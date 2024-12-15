@@ -411,18 +411,26 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 
 				// Light vector -- FROM fragment TO light
 				Vector3 L = Normalize(uniform.light.position - p);
-				Vector3 V = Normalize(uniform.cameraPos - p);
-				Vector3 R = Reflect(L - 1, n);
+				Vector3 V = Normalize(uniform.cameraPos - uniform.light.position);
+				Vector3 R = Reflect(L*-1, n);
+				Vector3 halfway = Normalize(V + L);
 
 				//dotnl
-				float diffuseIntensity = std::max(Dot(n, L), 0.0f);
+				float dotNL = std::max(Dot(n, L), 0.0f);
+				float dotVR = std::max(Dot(V, R), 0.0f);
+				float dotNH = std::max(Dot(halfway, n), 0.0f);
+
+				float distance = Length(uniform.light.position - p);
+				float attenuation = 1.0 / (distance * distance);
 
 				Vector3 pixelColor{ textureColor.r, textureColor.g, textureColor.b };
 				Vector3 d = V3_ONE * depth;
 				pixelColor /= 255.0f;
-				pixelColor *= uniform.light.diffuse * diffuseIntensity;
-				//pixelColor += uniform.light.co
-
+				pixelColor *= d;
+				pixelColor += uniform.light.ambient * dotNL;
+				pixelColor += uniform.light.ambient * powf(dotNH, 1.0f);
+				pixelColor *= uniform.light.diffuse * attenuation;
+				pixelColor *= uniform.light.radius;
 
 				Color color = Float3ToColor(&pixelColor.x);
 

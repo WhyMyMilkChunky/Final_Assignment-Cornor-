@@ -23,7 +23,7 @@ void CreateShaders()
     GLuint vsFSQ = CreateShader(GL_VERTEX_SHADER, "assets/shaders/fsq.vert");
     GLuint fsTexture = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/texture.frag");
 
-    GLuint fsPhong = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/phong.frag");
+    GLuint fsPhong = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/phong_map.frag");
 
     GLuint vsMVP = CreateShader(GL_VERTEX_SHADER, "assets/shaders/default.vert");
     GLuint fsColor= CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/color.frag");
