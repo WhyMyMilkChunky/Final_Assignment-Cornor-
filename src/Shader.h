@@ -11,6 +11,7 @@ struct Shader
 
 extern Shader gShaderFSQ;
 extern Shader gShaderColor;
+extern Shader gShaderPhong;
 
 void CreateShaders();
 void DestroyShaders();

@@ -59,14 +59,16 @@ void ThirdScene::OnDraw()
 	Matrix scale = Scale(objectScake);
 
 	Matrix model = scale * rotation * translation;
-	Matrix view = LookAt({ 0.0f, 0.0f, 10.0f }, V3_ZERO, V3_UP);
+	Vector3 cameraPos = {0.0f, 0.0f, 10.0f};
+	Matrix view = LookAt(cameraPos, V3_ZERO, V3_UP);
 	Matrix proj = Perspective(90.0f * DEG2RAD, 1.0f, 0.1f, 100.0f);
 	Matrix mvp = model * view * proj;
 
 	UniformData uniform;
 	uniform.mvp = model * view * proj;
-	uniform.lightPosition = lightPosition;
-	uniform.lightColor = Vector3({0.5,0.5,0.5 });
+	uniform.cameraPos = cameraPos;
+	uniform.light.position = lightPosition;
+	uniform.light.diffuse = Vector3({0.5,0.5,0.5 });
 	uniform.world = model;
 	uniform.normal = NormalMatrix(model);
 
@@ -74,7 +76,7 @@ void ThirdScene::OnDraw()
 
 
 	BindTexture(mTexture);
-	BindShader(&gShaderFSQ);
+	BindShader(&gShaderPhong);
 	SendInt("u_tex", 0);
 	BindFsq();
 	DrawFsq();

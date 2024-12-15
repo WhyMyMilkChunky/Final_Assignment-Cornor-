@@ -1,6 +1,7 @@
 #pragma once
 #include "Image.h"
 #include "Mesh.h"
+#include "Lights.h"
 
 struct Rect
 {
@@ -259,9 +260,8 @@ struct UniformData
 	Matrix mvp;
 	Matrix world;
 	Matrix normal;
-
-	Vector3 lightPosition;
-	Vector3 lightColor;
+	Vector3 cameraPos;
+	Light light;
 
 	// Supplying near & far for depth visualization
 	float near;
@@ -410,13 +410,18 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 				Color textureColor = GetPixel(gImageDiffuse, uv.x * tw, uv.y * th);
 
 				// Light vector -- FROM fragment TO light
-				Vector3 l = Normalize(uniform.lightPosition - p);
-				float diffuseIntensity = std::max(Dot(n, l), 0.0f);
+				Vector3 L = Normalize(uniform.light.position - p);
+				Vector3 V = Normalize(uniform.cameraPos - p);
+				Vector3 R = Reflect(L - 1, n);
+
+				//dotnl
+				float diffuseIntensity = std::max(Dot(n, L), 0.0f);
 
 				Vector3 pixelColor{ textureColor.r, textureColor.g, textureColor.b };
 				Vector3 d = V3_ONE * depth;
 				pixelColor /= 255.0f;
-				pixelColor *= uniform.lightColor * diffuseIntensity;
+				pixelColor *= uniform.light.diffuse * diffuseIntensity;
+				pixelColor += uniform.light.co
 
 
 				Color color = Float3ToColor(&pixelColor.x);

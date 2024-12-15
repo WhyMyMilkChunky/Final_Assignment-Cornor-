@@ -12,6 +12,7 @@ std::vector<GLuint> fPrograms;
 
 Shader gShaderFSQ;
 Shader gShaderColor;
+Shader gShaderPhong;
 
 GLuint CreateShader(GLint type, const char* path);
 void CreateProgram(Shader* shader, GLuint vs, GLuint fs);
@@ -22,11 +23,14 @@ void CreateShaders()
     GLuint vsFSQ = CreateShader(GL_VERTEX_SHADER, "assets/shaders/fsq.vert");
     GLuint fsTexture = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/texture.frag");
 
+    GLuint fsPhong = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/phong.frag");
+
     GLuint vsMVP = CreateShader(GL_VERTEX_SHADER, "assets/shaders/default.vert");
     GLuint fsColor= CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/color.frag");
     
     CreateProgram(&gShaderFSQ, vsFSQ, fsTexture);
     CreateProgram(&gShaderColor, vsMVP, fsColor);
+    CreateProgram(&gShaderPhong, vsMVP, fsPhong);
 }
 
 void DestroyShaders()
