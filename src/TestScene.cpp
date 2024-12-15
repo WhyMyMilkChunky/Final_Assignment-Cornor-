@@ -13,6 +13,7 @@ float gCubeRotation = 0.0f;
 
 void TestScene::OnLoad()
 {
+    
     LoadImage(&mImage, IMAGE_SIZE, IMAGE_SIZE);
     LoadTexture(&mTexture, IMAGE_SIZE, IMAGE_SIZE);
 }
@@ -52,7 +53,7 @@ void TestScene::OnDraw()
     UpdateTexture(mTexture, mImage);
 
     BindTexture(mTexture);
-    BindShader(&gShaderFSQ);
+    BindShader(&gShaderPhong);
     SendInt("u_tex", 0);
     BindFsq();
     DrawFsq();

@@ -19,8 +19,6 @@ struct Light {
 
 uniform Material u_material;
 
-
-
 uniform Light u_light;
 uniform vec3 u_eye;
 

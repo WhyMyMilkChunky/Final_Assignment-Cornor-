@@ -71,7 +71,7 @@ void MainScene::OnDraw()
     UpdateTexture(mTexture, mImage);
 
     BindTexture(mTexture);
-    BindShader(&gShaderFSQ);
+    BindShader(&gShaderPhong);
     SendInt("u_tex", 0);
     BindFsq();
     DrawFsq();

@@ -12,10 +12,12 @@ constexpr int IMAGE_SIZE = 512;
 Vector3 objectPos = {};
 Vector3 lightPos = V3_FORWARD;
 Vector3 objectScale = { 1,1,1 };
+Light footLight;
 void FourthScene::OnLoad()
 {
 	LoadImage(&mImage, IMAGE_SIZE, IMAGE_SIZE);
 	LoadTexture(&mTexture, IMAGE_SIZE, IMAGE_SIZE);
+	footLight = CreateLight({ 0,2,3 }, { 255,255,255 }, 0.5, 0.5, 20);
 }
 
 
@@ -31,6 +33,7 @@ void FourthScene::OnUpdate(float dt)
 	ClearDepth(&mImage, 1);
 
 	float tt = TotalTime();
+
 
 
 	Matrix translation = Translate({ 0.0f,0.0f,6.0f });
@@ -62,8 +65,10 @@ void FourthScene::OnDraw()
 
 
 	BindTexture(mTexture);
-	BindShader(&gShaderFSQ);
-	SendInt("u_tex", 0);
+	BindShader(&gShaderPhong);
+	SendVec3("u_eye", { 0.0f, 0.0f, 10.0f });
+	SendLight("u_light", &footLight);
+	SendMaterial("u_Material", &gold);
 	BindFsq();
 	DrawFsq();
 	UnbindShader();

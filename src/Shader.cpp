@@ -12,6 +12,7 @@ std::vector<GLuint> fPrograms;
 
 Shader gShaderFSQ;
 Shader gShaderColor;
+Shader gShaderNormals;
 Shader gShaderPhong;
 
 GLuint CreateShader(GLint type, const char* path);
@@ -23,10 +24,11 @@ void CreateShaders()
     GLuint vsFSQ = CreateShader(GL_VERTEX_SHADER, "assets/shaders/fsq.vert");
     GLuint fsTexture = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/texture.frag");
 
-    GLuint fsPhong = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/phong_map.frag");
+    GLuint fsPhong = CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/phong.frag");
 
     GLuint vsMVP = CreateShader(GL_VERTEX_SHADER, "assets/shaders/default.vert");
     GLuint fsColor= CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/color.frag");
+    GLuint fsNormal= CreateShader(GL_FRAGMENT_SHADER, "assets/shaders/normals.frag");
     
     CreateProgram(&gShaderFSQ, vsFSQ, fsTexture);
     CreateProgram(&gShaderColor, vsMVP, fsColor);
@@ -85,6 +87,23 @@ void SendVec4(const char* name, const Vector4& v)
 void SendMat4(const char* name, const Matrix* v)
 {
     glUniformMatrix4fv(GetUniform(name), 1, GL_TRUE, (const GLfloat*)v);
+}
+
+void SendLight(const char* name, const Light* v)
+{
+    glUniform3f(GetUniform(name), v->position.x, v->position.y, v->position.z);
+    glUniform3f(GetUniform(name), v->ambient.x, v->ambient.y, v->ambient.z);
+    glUniform3f(GetUniform(name), v->diffuse.x, v->diffuse.y, v->diffuse.z);
+    glUniform3f(GetUniform(name), v->specular.x, v->specular.y, v->specular.z);
+    glUniform1f(GetUniform(name), v->radius);
+}
+
+void SendMaterial(const char* name, const Material* v)
+{
+    glUniform3f(GetUniform(name), v->ambient.x, v->ambient.y, v->ambient.z);
+    glUniform3f(GetUniform(name), v->diffuse.x, v->diffuse.y, v->diffuse.z);
+    glUniform3f(GetUniform(name), v->specular.x, v->specular.y, v->specular.z);
+    glUniform1f(GetUniform(name), v->shininess);
 }
 
 GLuint CreateShader(GLint type, const char* path)
