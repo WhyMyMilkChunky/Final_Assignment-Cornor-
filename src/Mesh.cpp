@@ -64,7 +64,7 @@ void CreateMeshes()
 	CreateMeshGPU(&gMeshSphere);
 
 	LoadFromObj(&gMeshHead, "assets/meshes/head.obj");
-	//LoadFromObj(&gMeshJP, "assets/meshes/untitled.obj");
+	LoadFromObj(&gMeshJP, "assets/meshes/untitled.obj");
 }
 
 void DestroyMeshes()

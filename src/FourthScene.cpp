@@ -5,6 +5,7 @@
 #include "Rasterization.h"
 #include "ImageUtils.h"
 #include "Window.h"
+#include <imgui/imgui.h>
 
 constexpr int IMAGE_SIZE = 512;
 
@@ -26,31 +27,15 @@ void FourthScene::OnUnload()
 
 void FourthScene::OnUpdate(float dt)
 {
-
-	if (IsKeyPressed(KEY_1))
-	{
-		Scene::Change(MAIN);
-	}
-}
-void FourthScene::OnDrawImGui()
-{
-	ImGui::SliderFloat3("Object Position", &objectPos.x, -8.0f, 8.0f);
-	ImGui::SliderFloat3("Light Position", &lightPos.x, -15.0f, 15.0f);
-	ImGui::SliderFloat3("Object Scake", &objectScale.x, 1.0f, 1.0f);
-}
-
-void FourthScene::OnDraw()
-{
-	UpdateTexture(mTexture, mImage);
 	ClearColor(&mImage, GREEN);
 	ClearDepth(&mImage, 1);
 
 	float tt = TotalTime();
 
 
-	Matrix translation = Translate(objectPos);
+	Matrix translation = Translate({ 0.0f,0.0f,6.0f });
 	Matrix rotation = RotateY(DEG2RAD);
-	Matrix scale = Scale(objectPos);
+	Matrix scale = Scale({4,4,4});
 
 	Matrix model = scale * rotation * translation;
 	Matrix view = LookAt({ 0.0f, 0.0f, 10.0f }, V3_ZERO, V3_UP);
@@ -58,6 +43,22 @@ void FourthScene::OnDraw()
 	Matrix mvp = model * view * proj;
 
 	DrawMesh(&mImage, gMeshJP, mvp, model);
+	if (IsKeyPressed(KEY_1))
+	{
+		Scene::Change(MAIN);
+	}
+}
+void FourthScene::OnDrawImGui()
+{
+	ImGui::SliderFloat3("Object Position", &objectPos.x, 2.0f, 8.0f);
+	ImGui::SliderFloat3("Light Position", &lightPos.x, -15.0f, 15.0f);
+	ImGui::SliderFloat3("Object Scake", &objectScale.x, 1.0f, 1.0f);
+}
+
+void FourthScene::OnDraw()
+{
+	UpdateTexture(mTexture, mImage);
+
 
 
 	BindTexture(mTexture);

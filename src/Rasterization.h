@@ -421,7 +421,7 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 				Vector3 d = V3_ONE * depth;
 				pixelColor /= 255.0f;
 				pixelColor *= uniform.light.diffuse * diffuseIntensity;
-				pixelColor += uniform.light.co
+				//pixelColor += uniform.light.co
 
 
 				Color color = Float3ToColor(&pixelColor.x);
