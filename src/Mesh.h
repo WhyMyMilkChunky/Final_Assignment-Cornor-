@@ -29,6 +29,7 @@ extern Mesh gMeshTriangle;
 extern Mesh gMeshCube;
 extern Mesh gMeshSphere;
 extern Mesh gMeshHead;
+extern Mesh gMeshJP;
 extern Mesh gMeshDodecahedron;
 
 void CreateMeshes();
