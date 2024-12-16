@@ -57,7 +57,7 @@ void ThirdScene::OnUpdate(float dt)
     uniform.mvp = model * view * proj;
     uniform.cameraPos = cameraPos;
     uniform.light = light;
-   // uniform.light.position = lightPosition;
+    uniform.light.position = lightPosition;
 
     uniform.world = model;
     uniform.normal = NormalMatrix(model);
