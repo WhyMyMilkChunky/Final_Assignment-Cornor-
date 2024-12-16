@@ -628,7 +628,7 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world, Light li
 
 
 				Vector3 pixelColour = { 0.0f,0.0f,0.0f };
-				pixelColour += DirectionalDiffuseLight(n, { 0.0,0.0,-0.8},BLUE, 0.2);
+				pixelColour += DirectionalDiffuseLight(n, { 0.0,0.0,1.0},BLUE, 1.0);
 				Color color = Float3ToColor(&pixelColour.x);
 				SetPixel(image, x, y, color);
 			}

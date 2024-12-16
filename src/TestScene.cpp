@@ -36,7 +36,7 @@ void TestScene::OnUpdate(float dt)
     Matrix view = LookAt({ 0.0f, 0.0f, 5.0f }, V3_ZERO, V3_UP);
     Matrix proj = Perspective(45.0f * DEG2RAD, 1.0f, 0.1f, 100.0f);
     Matrix mvp = model * view * proj;
-    Light whiteDirectional = CreateLight({ 0.0,0.0,-1.0 }, {1.0,1.0,1.0}, 0.25, 0.4, 100);
+    Light whiteDirectional = CreateLight({ 0.0,0.0,20.0 }, {1.0,1.0,1.0}, 0.25, 0.4, 100);
     DrawMesh(&mImage, gMeshCube, mvp, model,whiteDirectional);
 
     if (gCubeRotation >= 360.0f)
