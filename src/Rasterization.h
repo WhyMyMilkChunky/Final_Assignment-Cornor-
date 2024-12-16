@@ -505,9 +505,10 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 				float th = gImageDiffuse.height;
 				Color textureColor = GetPixel(gImageDiffuse, uv.x * tw, uv.y * th);
 				Vector3 pixelColor;
+				Vector3 skin = { 0.8f,0.43f,0.4f };
 				switch (lightType) {
 				case (SPOT):
-					pixelColor = GetSpotLight(uniform, n,FILIPINO, depth, p);
+					pixelColor = GetSpotLight(uniform, n, Float3ToColor(&skin.x), depth, p);
 					break;
 				case (DIRECTIONAL):
 					pixelColor = DirectionalDiffuseLight(n, Vector3{0,0,-1}, textureColor, 1, uniform.light.diffuse);
