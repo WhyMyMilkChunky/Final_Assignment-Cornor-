@@ -336,32 +336,36 @@ inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, 
 	return { 0.0f, 0.0f, 0.0f };
 }
 inline Vector3 GetPointLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
-
-	//phong I REALLY THINK THIS IS PHONG AND WORKS PERFECTLY RIGHT
-// Light vector -- FROM fragment TO light
+	Vector3 N = Normalize(n);
 	Vector3 L = Normalize(uniform.light.position - p);
 	Vector3 V = Normalize(uniform.cameraPos - p);
-	Vector3 R = Reflect(L * -1, n);
-	Vector3 halfway = Normalize(V + L);
 
-	//dotnl
-	float dotNL = std::max(Dot(n, L), 0.0f);
-	float dotVR = std::max(Dot(V, R), 0.0f);
-	float dotNH = std::max(Dot(halfway, n), 0.0f);
+	//specular needs reflection vector regan (duh)..................................................................................................................................................its a joke plz dont kill me
+	Vector3 R = Reflect(Vector3{ -L.x, -L.y, -L.z }, n);
 
+	// Dot products
+	float dotNL = std::max(Dot(L, N), 0.0f);
+	float dotVR = std::max(Dot(R, V), 0.0f);
+
+	
 	float distance = Length(uniform.light.position - p);
-	float attenuation = 1.0 / (distance * distance);
+	float attenuation = 1.0f / (distance * distance);
 
-	Vector3 lightApply{ textureColor.r, textureColor.g, textureColor.b };
-	Vector3 d = V3_ONE * depth;
-	lightApply /= 255.0f;
-	lightApply *= d;
-	lightApply += uniform.light.ambient * dotNL;
-	lightApply += uniform.light.ambient * powf(dotNH, 1.0f);
-	lightApply *= uniform.light.diffuse * attenuation;
-	lightApply *= uniform.light.radius;
-	return lightApply;
+	float shininess = 16.0f;//manual roughness just like materials in unity frfr
+
+	Vector3 lightApply = {
+		textureColor.r / 255.0f,
+		textureColor.g / 255.0f,
+		textureColor.b / 255.0f
+	};
+	Vector3 ambient = uniform.light.ambient * lightApply;
+	Vector3 diffuse = uniform.light.diffuse * dotNL * lightApply;
+	Vector3 specular = uniform.light.specular * powf(dotVR, shininess);
+	Vector3 lighting = (ambient + diffuse + specular) * attenuation;
+
+	return lighting * uniform.light.radius;
 }
+
 
 inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lightType)
 {
