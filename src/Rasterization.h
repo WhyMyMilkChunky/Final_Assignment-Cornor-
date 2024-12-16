@@ -507,7 +507,7 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 				Vector3 pixelColor;
 				switch (lightType) {
 				case (SPOT):
-					pixelColor = GetSpotLight(uniform, n, textureColor, depth, p);
+					pixelColor = GetSpotLight(uniform, n,FILIPINO, depth, p);
 					break;
 				case (DIRECTIONAL):
 					pixelColor = DirectionalDiffuseLight(n, Vector3{0,0,-1}, textureColor, 1, uniform.light.diffuse);
@@ -637,7 +637,7 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world, Light li
 
 				Vector3 pixelColour = { 0.0f,0.0f,0.0f };
 				//tried to do -z but it was behind the block sooooooo i want it to face the block idk
-				pixelColour += DirectionalDiffuseLight(n, { 0.0,0.0,1.0},BLUE, 1.0, light.diffuse);
+				pixelColour += DirectionalDiffuseLight(n, { 0.0,0.0,1.0},GRAY, 1.0, light.diffuse);
 				Color color = Float3ToColor(&pixelColour.x);
 				SetPixel(image, x, y, color);
 			}
