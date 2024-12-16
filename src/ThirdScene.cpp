@@ -65,7 +65,7 @@ void ThirdScene::OnUpdate(float dt)
     DrawMesh(&mImage, gMeshHead, uniform,POINT);
 
     if (IsKeyPressed(KEY_5)) {
-        Scene::Change(FOURTH);
+        Scene::Change(SECOND);
     }
 }
 
