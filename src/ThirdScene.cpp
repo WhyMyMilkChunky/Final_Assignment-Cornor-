@@ -13,7 +13,7 @@ constexpr int IMAGE_SIZE = 512;
 
 Vector3 objectPosition = {};
 Vector3 lightPosition = V3_FORWARD;
-Vector3 lightColor = {};
+Vector3 lightColor = {0.9,0.6,0.9};
 Vector3 objectScake = { 1,1,1 };
 
 
@@ -64,7 +64,7 @@ void ThirdScene::OnUpdate(float dt)
     uniform.world = model;
     uniform.normal = NormalMatrix(model);
 
-    DrawMesh(&mImage, gMeshHead, uniform);
+    DrawMesh(&mImage, gMeshHead, uniform,POINT);
 
     if (IsKeyPressed(KEY_5)) {
         Scene::Change(FOURTH);
@@ -77,14 +77,13 @@ void ThirdScene::OnDrawImGui()
 	ImGui::SliderFloat3("Object Position", &objectPosition.x, -8, 8);
 	ImGui::SliderFloat3("Light Position", &lightPosition.x, -15, 15);
 	ImGui::SliderFloat3("Object Scake", &objectScake.x, 1, 1);
-	ImGui::ColorPicker3("Light Colour", &lightColor.x);
 }
 
 void ThirdScene::OnDraw()
 {
 	UpdateTexture(mTexture, mImage);
 
-
+    //I wrote phong into the draw mesh  ¯\_( ° > °)_/¯
 	BindTexture(mTexture);
 	BindShader(&gShaderFSQ);
 	SendInt("u_tex", 0);

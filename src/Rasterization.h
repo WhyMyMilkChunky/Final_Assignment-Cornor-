@@ -314,7 +314,7 @@ inline Vector3 GetPointLight(UniformData uniform, Vector3 n, Color textureColor,
 	return lightApply;
 }
 
-inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
+inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lightType)
 {
 	// input
 	Vector3* vertices = new Vector3[mesh.vertexCount];
@@ -435,8 +435,18 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform)
 				float tw = gImageDiffuse.width;
 				float th = gImageDiffuse.height;
 				Color textureColor = GetPixel(gImageDiffuse, uv.x * tw, uv.y * th);
+				Vector3 pixelColor;
+				switch (lightType) {
+				case (SPOT):
+					break;
+				case (DIRECTIONAL):
 
-				Vector3 pixelColor = GetPointLight(uniform, n, textureColor, depth, p);
+					break;
+				case(POINT):
+					pixelColor = GetPointLight(uniform, n, textureColor, depth, p);
+
+					break;
+				}
 
 				Color color = Float3ToColor(&pixelColor.x);
 

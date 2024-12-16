@@ -53,7 +53,7 @@ void TestScene::OnDraw()
     UpdateTexture(mTexture, mImage);
 
     BindTexture(mTexture);
-    BindShader(&gShaderPhong);
+    BindShader(&gShaderFSQ);
     SendInt("u_tex", 0);
     BindFsq();
     DrawFsq();

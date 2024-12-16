@@ -12,13 +12,7 @@ constexpr int IMAGE_SIZE = 512;
 Vector3 objectPos = {};
 Vector3 lightPos = V3_FORWARD;
 Vector3 objectScale = { 1,1,1 };
-Light footLight{
-	{0,2,10},
-	{200,100,200},
-	{200,100,200},
-	{200,100,200},
-	100
-};
+Light footLight;
 void FourthScene::OnLoad()
 {
 	LoadImage(&mImage, IMAGE_SIZE, IMAGE_SIZE);
@@ -40,15 +34,13 @@ void FourthScene::OnUpdate(float dt)
 
 	float tt = TotalTime();
 
-
-
-	Matrix translation = Translate({ 0.0f,0.0f,10.0f });
+	Matrix translation = Translate({ 0.0f,0.0f,1.0f });
 	Matrix rotation = RotateY(DEG2RAD);
-	Matrix scale = Scale({4,4,4});
+	Matrix scale = Scale({ 1,1,1 });
 
 	Matrix model = scale * rotation * translation;
 	Matrix view = LookAt({ 0.0f, 0.0f, 10.0f }, V3_ZERO, V3_UP);
-	Matrix proj = Perspective(90.0f * DEG2RAD, 1.0f, 0.1f, 100.0f);
+	Matrix proj = Perspective(90.0f * DEG2RAD, 1.0f, 0.01f, 100.0f);
 	Matrix mvp = model * view * proj;
 
 	DrawMesh(&mImage, gMeshJP, mvp, model);
@@ -71,10 +63,7 @@ void FourthScene::OnDraw()
 
 
 	BindTexture(mTexture);
-	BindShader(&gShaderPhong);
-	SendVec3("u_eye", { 0.0f, 0.0f, 10.0f });
-	SendLight("u_light", &footLight);
-	SendMaterial("u_Material", &gold);
+	BindShader(&gShaderFSQ);
 	BindFsq();
 	DrawFsq();
 	UnbindShader();

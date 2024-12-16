@@ -12,7 +12,6 @@ std::vector<GLuint> fPrograms;
 
 Shader gShaderFSQ;
 Shader gShaderColor;
-Shader gShaderNormals;
 Shader gShaderPhong;
 
 GLuint CreateShader(GLint type, const char* path);
