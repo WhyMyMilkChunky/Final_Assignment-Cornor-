@@ -309,40 +309,43 @@ inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color 
 	return diffuse;
 }
 
-inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p)
-{
-	Vector3 L = Normalize(uniform.light.position - p);
-	Vector3 V = Normalize(uniform.cameraPos - p); 
-	Vector3 R = Reflect(L * -1, n);
-	Vector3 halfway = Normalize(V + L);
+inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
+	// Normalize vectors
+	Vector3 L = Normalize(uniform.light.position - p); 
+	Vector3 V = Normalize(uniform.cameraPos - p);
+	Vector3 R = Reflect(Vector3{ -L.x, -L.y, -L.z }, n); 
 
+	float angle = Dot(Vector3{ -L.x, -L.y, -L.z }, Normalize(Vector3{ 0, -1, 0 }));
 
-	float angle = Dot(L, {0,-90,0});
-
-	if (angle > 45.0f)
-	{
+	// Check if within spotlight cutoff
+	float cutoff = 0.45f;
+	if (angle > cutoff) {
 		float distance = Length(uniform.light.position - p);
-		float attenuation = 1.0f / (distance * distance);
-		float dotNL = std::max(Dot(n, L), 0.0f); //diffuse
-		float dotVR = std::max(Dot(V, R), 0.0f); //spec
-		float dotNH = std::max(Dot(halfway, n), 0.0f);//highlight
+		float attenuation = std::max(1.0f - (distance / uniform.light.radius), 0.0f);
 
-		Vector3 color = { textureColor.r, textureColor.g, textureColor.b };
-		Vector3 d = V3_ONE * depth;
-		color /= 255.0f;
-		color *= d;
-		color += uniform.light.ambient * dotNL;
-		color += uniform.light.ambient * powf(dotNH, 1.0f);
+		// Calculate lighting components
+		float dotNL = std::max(Dot(n, L), 0.0f);
+		float dotVR = std::max(Dot(V, R), 0.0f);  
+		float shininess = 16;    
 
-		//attenuation
-		color *= uniform.light.diffuse * attenuation;
-		color *= uniform.light.radius; 
+		Vector3 baseColor = {
+			textureColor.r / 255,
+			textureColor.g / 255,
+			textureColor.b / 255
+		};
+		Vector3 ambient = uniform.light.ambient * baseColor;
+		Vector3 diffuse = uniform.light.diffuse * dotNL * baseColor;
+		Vector3 specular = uniform.light.specular * powf(dotVR, shininess);
+		Vector3 lighting = (ambient + diffuse + specular) * attenuation;
 
-		return color;
+		return lighting * uniform.light.radius;
 	}
+
 
 	return { 0.0f, 0.0f, 0.0f };
 }
+
+
 inline Vector3 GetPointLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
 	Vector3 N = Normalize(n);
 	Vector3 L = Normalize(uniform.light.position - p);
