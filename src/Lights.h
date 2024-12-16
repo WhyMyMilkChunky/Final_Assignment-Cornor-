@@ -12,7 +12,8 @@ enum LightType
 {
     POINT,
     SPOT,
-    DIRECTIONAL
+    DIRECTIONAL,
+    FRACTAL
 
 };
 

@@ -10,6 +10,7 @@ public:
 	void OnUnload() final;
 
 	void OnUpdate(float dt) final;
+	void OnDrawImGui();
 	void OnDraw() final;
 
 private:

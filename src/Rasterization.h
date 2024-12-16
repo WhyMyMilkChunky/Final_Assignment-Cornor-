@@ -557,6 +557,9 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 					pixelColor = GetPointLight(uniform, n, textureColor, depth, p);
 
 					break;
+				case(FRACTAL):
+					pixelColor = GetFractalLight(uniform, n, textureColor, depth, p);
+					break;
 				}
 
 				Color color = Float3ToColor(&pixelColor.x);
