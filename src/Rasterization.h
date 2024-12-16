@@ -286,19 +286,24 @@ inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
 {
 	return A * t.x + B * t.y + C * t.z;
 }
-inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color color, float diffuse)
-{
-	Vector3 Dir = { -direction.x, -direction.y, -direction.z };
+inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color textureColor, float intensity) {
+	// Ensure light direction is normalized
+	Vector3 L = Normalize(direction);
 
-	float dotNL = std::max(Dot(normal, Dir), 0.0f);
+	// Dot product of normal and light direction
+	float dotNL = std::max(Dot(normal, L), 0.0f);
 
+	// Convert texture color to Vector3
 	Vector3 diffuseColor = {
-		color.r * diffuse * dotNL,
-		color.g * diffuse * dotNL,
-		color.b * diffuse * dotNL
+		textureColor.r / 255.0f,
+		textureColor.g / 255.0f,
+		textureColor.b / 255.0f
 	};
 
-	return diffuseColor;
+	// Apply diffuse intensity and color
+	Vector3 diffuse = diffuseColor * dotNL * intensity;
+
+	return diffuse;
 }
 
 inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p)
