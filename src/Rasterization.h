@@ -309,6 +309,7 @@ inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color 
 	return diffuse;
 }
 
+
 inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
 	// Normalize vectors
 	Vector3 L = Normalize(uniform.light.position - p); 
@@ -383,6 +384,29 @@ inline Vector3 GetPointLight(UniformData uniform, Vector3 n, Color textureColor,
 }
 
 
+inline Vector3 GetFractalLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
+	// Normalize vectors
+	Vector3 L = Normalize(uniform.light.position - p);
+	Vector3 V = Normalize(uniform.cameraPos - p);  
+	Vector3 R = Reflect(Vector3{ -L.x, -L.y, -L.z }, n);  
+
+	
+	float fractalIntensity = FractalPattern(p);
+	float dotNL = std::max(Dot(n, L), 0.0f);
+	float dotVR = std::max(Dot(V, R), 0.0f);
+	float shininess = 16.0f;
+	Vector3 baseColor = {
+		textureColor.r / 255.0f,
+		textureColor.g / 255.0f,
+		textureColor.b / 255.0f
+	};
+	Vector3 ambient = uniform.light.ambient * baseColor * fractalIntensity;
+	Vector3 diffuse = uniform.light.diffuse * dotNL * baseColor * fractalIntensity;
+	Vector3 specular = uniform.light.specular * powf(dotVR, shininess) * fractalIntensity;
+	Vector3 lighting = ambient + diffuse + specular;
+
+	return lighting * uniform.light.radius;
+}
 inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lightType)
 {
 	// input
@@ -649,6 +673,22 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world, Light li
 	delete[] normals;
 	delete[] positions;
 	delete[] vertices;
+}
+inline float FractalPattern(Vector3 position, int iterations = 5, float scale = 10.0f) {
+	float fractalValue = 0.0f;
+	float amplitude = 1.0f;
+	float frequency = scale;
+
+	Vector3 p = position;
+	for (int i = 0; i < iterations; i++) {
+		fractalValue += amplitude * abs(sin(frequency * (p.x + p.y + p.z)));
+		frequency *= 2.0f;
+		amplitude *= 0.5f;
+		p *= 2.0f;
+	}
+
+
+	return fractalValue - floor(fractalValue);
 }
 
 
