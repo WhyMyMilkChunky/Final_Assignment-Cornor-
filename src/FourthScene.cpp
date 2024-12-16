@@ -52,9 +52,9 @@ void FourthScene::OnUpdate(float dt)
 
 
 	DrawMesh(&mImage, gMeshJP, uniform,SPOT);
-	if (IsKeyPressed(KEY_1))
+	if (IsKeyPressed(KEY_4))
 	{
-		Scene::Change(MAIN);
+		Scene::Change(THIRD);
 	}
 }
 void FourthScene::OnDrawImGui()

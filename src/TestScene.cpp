@@ -43,7 +43,7 @@ void TestScene::OnUpdate(float dt)
         gCubeRotation -= 360.0f;
 
     if (IsKeyPressed(KEY_3)) {
-    Scene:Change(SECOND);
+    Scene:Change(FOURTH);
     }
 }
 

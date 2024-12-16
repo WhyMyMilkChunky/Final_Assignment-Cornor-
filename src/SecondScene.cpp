@@ -56,8 +56,8 @@ void SecondScene::OnUpdate(float dt)
 	if (CubeRot >= 360.0f)
 		CubeRot -= 360.0f;
 
-	if (IsKeyPressed(KEY_4)) {
-	Scene:Change(THIRD);
+	if (IsKeyPressed(KEY_1)) {
+	Scene:Change(MAIN);
 	}
 }
 
