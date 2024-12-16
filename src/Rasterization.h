@@ -3,6 +3,7 @@
 #include "Mesh.h"
 #include "Lights.h"
 
+
 struct Rect
 {
 	int xMin;
@@ -10,7 +11,22 @@ struct Rect
 	int yMin;
 	int yMax;
 };
+inline float FractalPattern(Vector3 position, int iterations = 5, float scale = 10.0f) {
+	float fractalValue = 0.0f;
+	float amplitude = 1.0f;
+	float frequency = scale;
 
+	Vector3 p = position;
+	for (int i = 0; i < iterations; i++) {
+		fractalValue += amplitude * abs(sin(frequency * (p.x + p.y + p.z)));
+		frequency *= 2.0f;
+		amplitude *= 0.5f;
+		p *= 2.0f;
+	}
+
+
+	return fractalValue - floor(fractalValue);
+}
 inline void DrawLineX(Image* image, int row, int x0, int x1, Color color)
 {
 	for (int x = x0; x <= x1; x++)
@@ -674,22 +690,7 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world, Light li
 	delete[] positions;
 	delete[] vertices;
 }
-inline float FractalPattern(Vector3 position, int iterations = 5, float scale = 10.0f) {
-	float fractalValue = 0.0f;
-	float amplitude = 1.0f;
-	float frequency = scale;
 
-	Vector3 p = position;
-	for (int i = 0; i < iterations; i++) {
-		fractalValue += amplitude * abs(sin(frequency * (p.x + p.y + p.z)));
-		frequency *= 2.0f;
-		amplitude *= 0.5f;
-		p *= 2.0f;
-	}
-
-
-	return fractalValue - floor(fractalValue);
-}
 
 
 
