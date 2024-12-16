@@ -286,7 +286,7 @@ inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
 {
 	return A * t.x + B * t.y + C * t.z;
 }
-inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p, Vector3 direction, float cutoff, float radius)
+inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p)
 {
 	Vector3 L = Normalize(uniform.light.position - p);
 	Vector3 V = Normalize(uniform.cameraPos - p); 
@@ -294,9 +294,9 @@ inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, 
 	Vector3 halfway = Normalize(V + L);
 
 
-	float angle = Dot(L, direction);
+	float angle = Dot(L, {0,90,0});
 
-	if (angle > cutoff)
+	if (angle > 45.0f)
 	{
 		float distance = Length(uniform.light.position - p);
 		float attenuation = 1.0f / (distance * distance);
@@ -325,7 +325,7 @@ inline Vector3 GetPointLight(UniformData uniform, Vector3 n, Color textureColor,
 	//phong I REALLY THINK THIS IS PHONG AND WORKS PERFECTLY RIGHT
 // Light vector -- FROM fragment TO light
 	Vector3 L = Normalize(uniform.light.position - p);
-	Vector3 V = Normalize(uniform.cameraPos - uniform.light.position);
+	Vector3 V = Normalize(uniform.cameraPos - p);
 	Vector3 R = Reflect(L * -1, n);
 	Vector3 halfway = Normalize(V + L);
 
@@ -472,7 +472,7 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 				Vector3 pixelColor;
 				switch (lightType) {
 				case (SPOT):
-					//pixelColor = GetSpotLight(uniform, n, textureColor, depth, p, uniform.light.direction, uniform.light.cutoff, uniform.light.radius);
+					pixelColor = GetSpotLight(uniform, n, textureColor, depth, p);
 					break;
 				case (DIRECTIONAL):
 
