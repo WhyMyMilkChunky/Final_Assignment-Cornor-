@@ -345,8 +345,8 @@ inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, 
 		return lighting * uniform.light.radius;
 	}
 
-	// Outside spotlight cutoff, no light contribution
-	return { 0.0f, 0.0f, 0.0f };
+
+	return {uniform.light.ambient };
 }
 
 
