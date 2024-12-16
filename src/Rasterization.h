@@ -289,7 +289,7 @@ inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
 {
 	return A * t.x + B * t.y + C * t.z;
 }
-inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color textureColor, float intensity) {
+inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color textureColor, float intensity, Vector3 lightColour) {
 	// Ensure light direction is normalized
 	Vector3 L = Normalize(direction);
 
@@ -304,7 +304,7 @@ inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color 
 	};
 
 	// Apply diffuse intensity and color
-	Vector3 diffuse = diffuseColor * dotNL * intensity;
+	Vector3 diffuse = diffuseColor * dotNL * intensity * lightColour;
 
 	return diffuse;
 }
@@ -505,7 +505,7 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 					pixelColor = GetSpotLight(uniform, n, textureColor, depth, p);
 					break;
 				case (DIRECTIONAL):
-					pixelColor = DirectionalDiffuseLight(n, Vector3{0,0,-1}, textureColor, 1);
+					pixelColor = DirectionalDiffuseLight(n, Vector3{0,0,-1}, textureColor, 1, uniform.light.diffuse);
 					break;
 				case(POINT):
 					pixelColor = GetPointLight(uniform, n, textureColor, depth, p);
@@ -631,7 +631,8 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world, Light li
 
 
 				Vector3 pixelColour = { 0.0f,0.0f,0.0f };
-				pixelColour += DirectionalDiffuseLight(n, { 0.0,0.0,1.0},BLUE, 1.0);
+				//tried to do -z but it was behind the block sooooooo i want it to face the block idk
+				pixelColour += DirectionalDiffuseLight(n, { 0.0,0.0,1.0},BLUE, 1.0, light.diffuse);
 				Color color = Float3ToColor(&pixelColour.x);
 				SetPixel(image, x, y, color);
 			}
