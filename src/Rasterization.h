@@ -312,28 +312,29 @@ inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color 
 inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
 	// Normalize vectors
 	Vector3 L = Normalize(uniform.light.position - p); 
-	Vector3 V = Normalize(uniform.cameraPos - p); 
-	Vector3 R = Reflect(Vector3{ -L.x, -L.y, -L.z }, n);      
-
-	float angle = Dot(Vector3{ -L.x, -L.y, -L.z }, Normalize(Vector3{ 0, -1, 0 }));
+	Vector3 V = Normalize(uniform.cameraPos - p);  
+	Vector3 R = Reflect(Vector3{ -L.x, -L.y, -L.z }, n); 
 
 
-	float cutoff = 0.45;
+	float angle = Dot(Vector3{ -L.x, -L.y, -L.z }, Normalize(Vector3{ 0, -1, 0 })); 
+
+	
+	float cutoff = 0.45f; 
 	if (angle > cutoff) {
-
+		
 		float distance = Length(uniform.light.position - p);
 		float attenuation = std::max(1.0f - (distance / uniform.light.radius), 0.0f);
 
-
-		float dotNL = std::max(Dot(n, L), 0.0f);   
-		float dotVR = std::max(Dot(V, R), 0.0f);
-		float shininess = 16.0f;
+	
+		float dotNL = std::max(Dot(n, L), 0.0f); 
+		float dotVR = std::max(Dot(V, R), 0.0f);    
+		float shininess = 16.0f; 
 
 
 		Vector3 baseColor = {
-			textureColor.r / 255,
-			textureColor.g / 255,
-			textureColor.b / 255
+			textureColor.r / 255.0f,
+			textureColor.g / 255.0f,
+			textureColor.b / 255.0f
 		};
 
 		Vector3 ambient = uniform.light.ambient * baseColor;
