@@ -14,11 +14,12 @@ struct Rect
 inline float FractalPattern(Vector3 position, int iterations = 5, float scale = 10.0f) {
 	float fractalValue = 0.0f;
 	float amplitude = 1.0f;
+	float cool = TotalTime()/2;
 	float frequency = scale;
 
 	Vector3 p = position;
 	for (int i = 0; i < iterations; i++) {
-		fractalValue += amplitude * abs(sin(frequency * (p.x + p.y + p.z)));
+		fractalValue += amplitude * abs(sin(frequency * (p.x + p.y + p.z)*cool));
 		frequency *= 2.0f;
 		amplitude *= 0.5f;
 		p *= 2.0f;
