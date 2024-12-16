@@ -286,6 +286,40 @@ inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
 {
 	return A * t.x + B * t.y + C * t.z;
 }
+inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p, Vector3 direction, float cutoff, float radius)
+{
+	Vector3 L = Normalize(uniform.light.position - p);
+	Vector3 V = Normalize(uniform.cameraPos - p); 
+	Vector3 R = Reflect(L * -1, n);
+	Vector3 halfway = Normalize(V + L);
+
+
+	float angle = Dot(L, direction);
+
+	if (angle > cutoff)
+	{
+		float distance = Length(uniform.light.position - p);
+		float attenuation = 1.0f / (distance * distance);
+		float dotNL = std::max(Dot(n, L), 0.0f); //diffuse
+		float dotVR = std::max(Dot(V, R), 0.0f); //spec
+		float dotNH = std::max(Dot(halfway, n), 0.0f);//highlight
+
+		Vector3 color = { textureColor.r, textureColor.g, textureColor.b };
+		Vector3 d = V3_ONE * depth;
+		color /= 255.0f;
+		color *= d;
+		color += uniform.light.ambient * dotNL;
+		color += uniform.light.ambient * powf(dotNH, 1.0f);
+
+		//attenuation
+		color *= uniform.light.diffuse * attenuation;
+		color *= uniform.light.radius; 
+
+		return color;
+	}
+
+	return { 0.0f, 0.0f, 0.0f };
+}
 inline Vector3 GetPointLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p) {
 
 	//phong I REALLY THINK THIS IS PHONG AND WORKS PERFECTLY RIGHT
@@ -438,6 +472,7 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 				Vector3 pixelColor;
 				switch (lightType) {
 				case (SPOT):
+					//pixelColor = GetSpotLight(uniform, n, textureColor, depth, p, uniform.light.direction, uniform.light.cutoff, uniform.light.radius);
 					break;
 				case (DIRECTIONAL):
 
@@ -454,6 +489,7 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 			}
 		}
 	}
+
 
 	delete[] rects;
 	delete[] tcoords;
