@@ -32,7 +32,7 @@ void TestScene::OnUpdate(float dt)
     const float rotationSpeed = 90.0f; 
     gCubeRotation += rotationSpeed * dt;
 
-    Matrix model = Translate({0,0,5}) * RotateY(gCubeRotation * DEG2RAD);
+    Matrix model = Translate({0,0,0}) * RotateY(gCubeRotation * DEG2RAD);
     Matrix view = LookAt({ 0.0f, 0.0f, 5.0f }, V3_ZERO, V3_UP);
     Matrix proj = Perspective(45.0f * DEG2RAD, 1.0f, 0.1f, 100.0f);
     Matrix mvp = model * view * proj;
