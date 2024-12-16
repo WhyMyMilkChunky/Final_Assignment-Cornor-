@@ -323,7 +323,7 @@ inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, 
 	if (angle > cutoff) {
 		
 		float distance = Length(uniform.light.position - p);
-		float attenuation = std::max(1.0f - (distance / uniform.light.radius), 0.5f);
+		float attenuation = std::max(1.0f - (distance / uniform.light.radius), 0.0f);
 
 	
 		float dotNL = std::max(Dot(n, L), 0.0f); 
@@ -345,8 +345,8 @@ inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, 
 		return lighting * uniform.light.radius;
 	}
 
-	// Outside spotlight cutoff, no light contribution
-	return uniform.light.ambient;
+
+	return {uniform.light.ambient };
 }
 
 
@@ -505,13 +505,12 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 				float th = gImageDiffuse.height;
 				Color textureColor = GetPixel(gImageDiffuse, uv.x * tw, uv.y * th);
 				Vector3 pixelColor;
-				Vector3 skinColor = { 1.0f,0.5f,0.4f };
 				switch (lightType) {
 				case (SPOT):
-					pixelColor = GetSpotLight(uniform, n, Float3ToColor(&skinColor.x), depth, p);
+					pixelColor = GetSpotLight(uniform, n,FILIPINO, depth, p);
 					break;
 				case (DIRECTIONAL):
-					pixelColor = DirectionalDiffuseLight(n, Vector3{0,0,-1}, textureColor , 1, uniform.light.diffuse);
+					pixelColor = DirectionalDiffuseLight(n, Vector3{0,0,-1}, textureColor, 1, uniform.light.diffuse);
 					break;
 				case(POINT):
 					pixelColor = GetPointLight(uniform, n, textureColor, depth, p);
