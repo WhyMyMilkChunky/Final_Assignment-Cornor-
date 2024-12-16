@@ -13,8 +13,6 @@ constexpr int IMAGE_SIZE = 512;
 
 Vector3 objectPosition = {};
 Vector3 lightPosition = V3_FORWARD;
-Vector3 lightColor = {0.9,0.6,0.9};
-Vector3 objectScake = { 1,1,1 };
 
 
 void ThirdScene::OnLoad()
@@ -45,7 +43,7 @@ void ThirdScene::OnUpdate(float dt)
 
     Matrix translation = Translate(objectPosition);
     Matrix rotation = RotateY(DEG2RAD);
-    Matrix scale = Scale(objectScake);
+    Matrix scale = Scale(1,1,1);
 
     Matrix model = scale * rotation * translation;
     Vector3 cameraPos = { 0, 0, 10};
@@ -53,13 +51,14 @@ void ThirdScene::OnUpdate(float dt)
     Matrix proj = Perspective(45 * DEG2RAD, 1.0f, 0.1, 100);
     Matrix mvp = model * view * proj;
 
-    Light light = CreateLight(lightPosition, lightColor, 0.25, 1.0, 10);
+    Light light = CreateLight(lightPosition, 0.25, 1.0, 10);
 
     UniformData uniform;
     uniform.mvp = model * view * proj;
     uniform.cameraPos = cameraPos;
     uniform.light = light;
     uniform.light.position = lightPosition;
+    uniform.light.colour = { 0.3f,0.3f,0.3f };
 
     uniform.world = model;
     uniform.normal = NormalMatrix(model);
@@ -76,7 +75,6 @@ void ThirdScene::OnDrawImGui()
 {
 	ImGui::SliderFloat3("Object Position", &objectPosition.x, -8, 8);
 	ImGui::SliderFloat3("Light Position", &lightPosition.x, -15, 15);
-	ImGui::SliderFloat3("Object Scake", &objectScake.x, 1, 1);
 }
 
 void ThirdScene::OnDraw()

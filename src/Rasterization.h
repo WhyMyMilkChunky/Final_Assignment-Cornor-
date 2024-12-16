@@ -143,6 +143,8 @@ inline void DrawFaceWireframes(Image* image, Vector3* positions, size_t face, Co
 	}
 }
 
+
+
 inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world)
 {
 	// screen-space
@@ -180,7 +182,7 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world)
 	}
 
 	// Triangle AABBs
-	Rect* rects = new Rect[mesh.faceCount];				
+	Rect* rects = new Rect[mesh.faceCount];
 	for (size_t face = 0; face < mesh.faceCount; face++)
 	{
 		// Ensure min & max get overwritten
@@ -217,7 +219,7 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world)
 				Vector3 v0 = vertices[vertex + 0];
 				Vector3 v1 = vertices[vertex + 1];
 				Vector3 v2 = vertices[vertex + 2];
-				
+
 				// Tri-linear interpolation, ensure 0.0 >= uvw <= 1.0
 				Vector3 bc = Barycenter({ (float)x, (float)y, 0.0f }, v0, v1, v2);
 				bool low = bc.x < 0.0f || bc.y < 0.0f || bc.z < 0.0f;
@@ -237,12 +239,13 @@ inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world)
 				Vector3 p1 = positions[vertex + 1];
 				Vector3 p2 = positions[vertex + 2];
 				Vector3 p = p0 * bc.x + p1 * bc.y + p2 * bc.z;
-				
+
 				Vector3 n0 = normals[vertex + 0];
 				Vector3 n1 = normals[vertex + 1];
 				Vector3 n2 = normals[vertex + 2];
 				Vector3 n = n0 * bc.x + n1 * bc.y + n2 * bc.z;
 
+				//barycentric 
 				Color color = Float3ToColor(&bc.x);
 				SetPixel(image, x, y, color);
 			}
@@ -520,6 +523,121 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 	delete[] normals;
 	delete[] positions;
 	delete[] ndcs;
+	delete[] vertices;
+}
+
+inline void DrawMesh(Image* image, Mesh mesh, Matrix mvp, Matrix world, Light light)
+{
+	// screen-space
+	Vector3* vertices = new Vector3[mesh.vertexCount];
+
+	// world-space
+	Vector3* positions = new Vector3[mesh.vertexCount];
+	Vector3* normals = new Vector3[mesh.vertexCount];
+
+	// Extract normal-matrix (remove translation and handle non-uniform scale)
+	Matrix normal = world;
+	normal.m12 = normal.m13 = normal.m14 = 0.0f;
+	normal = Transpose(Invert(normal));
+
+	// Convert mesh vertices from view-space to screen-space
+	for (size_t i = 0; i < mesh.vertexCount; i++)
+	{
+		Vector4 clip;
+		clip.x = mesh.positions[i].x;
+		clip.y = mesh.positions[i].y;
+		clip.z = mesh.positions[i].z;
+		clip.w = 1.0f;
+
+		clip = mvp * clip;
+		clip /= clip.w;
+
+		Vector3 screen;
+		screen.x = Remap(clip.x, -1.0f, 1.0f, 0.0f, image->width - 1.0f);
+		screen.y = Remap(clip.y, -1.0f, 1.0f, 0.0f, image->height - 1.0f);
+		screen.z = clip.z;
+
+		vertices[i] = screen;
+		positions[i] = world * mesh.positions[i];
+		normals[i] = Normalize(normal * mesh.normals[i]);
+	}
+
+	// Triangle AABBs
+	Rect* rects = new Rect[mesh.faceCount];
+	for (size_t face = 0; face < mesh.faceCount; face++)
+	{
+		// Ensure min & max get overwritten
+		int xMin = image->width - 1;
+		int yMin = image->height - 1;
+		int xMax = 0;
+		int yMax = 0;
+
+		// Determine min & max of face, ensure its on-screen
+		const size_t vertex = face * 3;
+		for (size_t i = 0; i < 3; i++)
+		{
+			int x = vertices[vertex + i].x;
+			int y = vertices[vertex + i].y;
+			xMin = std::max(0, std::min(xMin, x));
+			yMin = std::max(0, std::min(yMin, y));
+			xMax = std::min(image->width - 1, std::max(xMax, x));
+			yMax = std::min(image->height - 1, std::max(yMax, y));
+		}
+
+		rects[face].xMin = xMin;
+		rects[face].xMax = xMax;
+		rects[face].yMin = yMin;
+		rects[face].yMax = yMax;
+	}
+
+	for (size_t face = 0; face < mesh.faceCount; face++)
+	{
+		for (int x = rects[face].xMin; x <= rects[face].xMax; x++)
+		{
+			for (int y = rects[face].yMin; y <= rects[face].yMax; y++)
+			{
+				size_t vertex = face * 3;
+				Vector3 v0 = vertices[vertex + 0];
+				Vector3 v1 = vertices[vertex + 1];
+				Vector3 v2 = vertices[vertex + 2];
+
+				// Tri-linear interpolation, ensure 0.0 >= uvw <= 1.0
+				Vector3 bc = Barycenter({ (float)x, (float)y, 0.0f }, v0, v1, v2);
+				bool low = bc.x < 0.0f || bc.y < 0.0f || bc.z < 0.0f;
+				bool high = bc.x > 1.0f || bc.y > 1.0f || bc.z > 1.0f;
+
+				// Discard if pixel not in triangle
+				if (low || high)
+					continue;
+
+				// Depth is now within [near = 0.001, far = 10.0], comparison is LESS
+				float depth = v0.z * bc.x + v1.z * bc.y + v2.z * bc.z;
+				if (depth > GetDepth(*image, x, y))
+					continue;
+				SetDepth(image, x, y, depth);
+
+				Vector3 p0 = positions[vertex + 0];
+				Vector3 p1 = positions[vertex + 1];
+				Vector3 p2 = positions[vertex + 2];
+				Vector3 p = p0 * bc.x + p1 * bc.y + p2 * bc.z;
+
+				Vector3 n0 = normals[vertex + 0];
+				Vector3 n1 = normals[vertex + 1];
+				Vector3 n2 = normals[vertex + 2];
+				Vector3 n = n0 * bc.x + n1 * bc.y + n2 * bc.z;
+
+
+				Vector3 pixelColour = { 0.0f,0.0f,0.0f };
+				pixelColour += DirectionalDiffuseLight(n, { 0.0,0.0,-0.8},BLUE, 0.2);
+				Color color = Float3ToColor(&pixelColour.x);
+				SetPixel(image, x, y, color);
+			}
+		}
+	}
+
+	delete[] rects;
+	delete[] normals;
+	delete[] positions;
 	delete[] vertices;
 }
 
