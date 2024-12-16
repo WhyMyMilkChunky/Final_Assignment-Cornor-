@@ -13,7 +13,6 @@ Mesh gMeshCube2;
 Mesh gMeshSphere;
 Mesh gMeshHead;
 Mesh gMeshJP;
-Mesh gMeshPlane;
 Mesh gMeshDodecahedron;
 
 void CreateMeshCPU(Mesh* mesh, size_t vc,
@@ -66,7 +65,6 @@ void CreateMeshes()
 
 	LoadFromObj(&gMeshHead, "assets/meshes/head.obj");
 	LoadFromObj(&gMeshJP, "assets/meshes/untitled.obj");
-	LoadFromObj(&gMeshPlane, "assets/meshes/plane_xy.obj");
 }
 
 void DestroyMeshes()
@@ -82,7 +80,6 @@ void DestroyMeshes()
 	Destroy(&gMeshSphere);
 	Destroy(&gMeshHead);
 	Destroy(&gMeshJP);
-	Destroy(&gMeshPlane);
 	glDeleteVertexArrays(1, &fVaoFsq);
 }
 

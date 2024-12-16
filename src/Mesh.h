@@ -31,7 +31,7 @@ extern Mesh gMeshSphere;
 extern Mesh gMeshHead;
 extern Mesh gMeshJP;
 extern Mesh gMeshDodecahedron;
-extern Mesh gMeshPlane;
+
 
 void CreateMeshes();
 void DestroyMeshes();

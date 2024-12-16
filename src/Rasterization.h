@@ -286,6 +286,21 @@ inline Vector2 Terp(Vector2 A, Vector2 B, Vector2 C, Vector3 t)
 {
 	return A * t.x + B * t.y + C * t.z;
 }
+inline Vector3 DirectionalDiffuseLight(Vector3 normal, Vector3 direction, Color color, float diffuse)
+{
+	Vector3 Dir = { -direction.x, -direction.y, -direction.z };
+
+	float dotNL = std::max(Dot(normal, Dir), 0.0f);
+
+	Vector3 diffuseColor = {
+		color.r * diffuse * dotNL,
+		color.g * diffuse * dotNL,
+		color.b * diffuse * dotNL
+	};
+
+	return diffuseColor;
+}
+
 inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, float depth, Vector3 p)
 {
 	Vector3 L = Normalize(uniform.light.position - p);
@@ -294,7 +309,7 @@ inline Vector3 GetSpotLight(UniformData uniform, Vector3 n, Color textureColor, 
 	Vector3 halfway = Normalize(V + L);
 
 
-	float angle = Dot(L, {0,90,0});
+	float angle = Dot(L, {0,-90,0});
 
 	if (angle > 45.0f)
 	{
@@ -475,7 +490,7 @@ inline void DrawMesh(Image* image, Mesh mesh, UniformData uniform, LightType lig
 					pixelColor = GetSpotLight(uniform, n, textureColor, depth, p);
 					break;
 				case (DIRECTIONAL):
-
+					pixelColor = DirectionalDiffuseLight(n, Vector3{0,0,-1}, textureColor, 1);
 					break;
 				case(POINT):
 					pixelColor = GetPointLight(uniform, n, textureColor, depth, p);
