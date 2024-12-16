@@ -6,7 +6,6 @@ struct Light {
     Vector3 ambient{};
     Vector3 diffuse{};
     Vector3 specular{};
-    Vector3 colour{};
     float radius = 1.0f;
 };
 enum LightType
@@ -17,12 +16,12 @@ enum LightType
 
 };
 
-inline Light CreateLight(Vector3 position, float ambient,float specular, float radius)
+inline Light CreateLight(Vector3 position,Vector3 lightColor, float ambient,float specular, float radius)
 {
     Light light;
-    light.ambient = light.colour * ambient;
-    light.diffuse = light.colour;
-    light.specular = light.colour * specular;
+    light.ambient = lightColor * ambient;
+    light.diffuse = lightColor;
+    light.specular = lightColor * specular;
     light.radius = radius;
     return light;
 }

@@ -51,14 +51,13 @@ void ThirdScene::OnUpdate(float dt)
     Matrix proj = Perspective(45 * DEG2RAD, 1.0f, 0.1, 100);
     Matrix mvp = model * view * proj;
 
-    Light light = CreateLight(lightPosition, 0.25, 1.0, 10);
+    Light light = CreateLight(lightPosition, { 0.3f,0.3f,0.3f }, 0.25, 1.0, 10);
 
     UniformData uniform;
     uniform.mvp = model * view * proj;
     uniform.cameraPos = cameraPos;
     uniform.light = light;
-    uniform.light.position = lightPosition;
-    uniform.light.colour = { 0.3f,0.3f,0.3f };
+   // uniform.light.position = lightPosition;
 
     uniform.world = model;
     uniform.normal = NormalMatrix(model);
