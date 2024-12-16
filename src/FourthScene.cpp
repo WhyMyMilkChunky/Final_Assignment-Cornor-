@@ -30,7 +30,7 @@ void FourthScene::OnUpdate(float dt)
 {
 	ClearColor(&mImage, GREEN);
 	ClearDepth(&mImage, 1);
-	footLight = CreateLight({ 0,8,0 }, LightColor,0.1f, 0.1f, 10);
+	footLight = CreateLight({ 0,8,0 }, LightColor,0.5f, 0.5f, 10);
 	float tt = TotalTime();
 
 	Matrix translation = Translate({ 0.0f,0.0f,0.0f });
